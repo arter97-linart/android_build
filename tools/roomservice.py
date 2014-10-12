@@ -195,44 +195,12 @@ def add_to_manifest(repositories, fallback_branch = None):
     f.write(raw_xml)
     f.close()
 
-def fetch_dependencies(repo_path, fallback_branch = None):
-    print('Looking for dependencies')
-    dependencies_path = repo_path + '/cm.dependencies'
-    syncable_repos = []
-
-    if os.path.exists(dependencies_path):
-        dependencies_file = open(dependencies_path, 'r')
-        dependencies = json.loads(dependencies_file.read())
-        fetch_list = []
-
-        for dependency in dependencies:
-            if not is_in_manifest("CyanogenMod/%s" % dependency['repository']):
-                fetch_list.append(dependency)
-                syncable_repos.append(dependency['target_path'])
-
-        dependencies_file.close()
-
-        if len(fetch_list) > 0:
-            print('Adding dependencies to manifest')
-            add_to_manifest(fetch_list, fallback_branch)
-    else:
-        print('Dependencies file not found, bailing out.')
-
-    if len(syncable_repos) > 0:
-        print('Syncing dependencies')
-        os.system('repo sync %s' % ' '.join(syncable_repos))
-
-    for deprepo in syncable_repos:
-        fetch_dependencies(deprepo)
-
 def has_branch(branches, revision):
     return revision in [branch['name'] for branch in branches]
 
 if depsonly:
     repo_path = get_from_manifest(device)
-    if repo_path:
-        fetch_dependencies(repo_path)
-    else:
+    if not repo_path:
         print("Trying dependencies-only mode on a non-existing device tree?")
 
     sys.exit()
@@ -285,7 +253,6 @@ else:
             os.system('repo sync %s' % repo_path)
             print("Repository synced!")
 
-            fetch_dependencies(repo_path, fallback_branch)
             print("Done")
             sys.exit()
 
