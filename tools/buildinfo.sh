@@ -41,6 +41,7 @@ if [ "$TARGET_UNIFIED_DEVICE" == "" ] ; then
   echo "ro.build.description=$PRIVATE_BUILD_DESC"
   echo "ro.build.fingerprint=$BUILD_FINGERPRINT"
 fi
+echo "ro.linart.device=$TARGET_DEVICE"
 echo "ro.build.characteristics=$TARGET_AAPT_CHARACTERISTICS"
 
 echo "ro.cm.device=$CM_DEVICE"
